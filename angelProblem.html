@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Angel Problem </title>
+        <style> 
+            html {
+                background-color: gray;
+            }
+            .title {
+                text-align: center;
+            }
+            #dropdown {
+                width: 200px;
+                padding: 5px;
+                font-size: 16px;
+              }
+            .tile {
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                border: 1px solid #000;
+                width: 50px;
+                height: 50px;
+            }           
+            .board {
+                display: grid;
+                grid-template-columns: repeat(50, 50px); 
+                grid-template-rows: repeat(50, 50px);
+            }
+            .angel {
+                background-color: green;
+            }
+            .devil {
+                background-color: red;
+            }
+            .border {
+                background-color: aqua;
+            }
+        </style>
+    </head>
+    <body>
+        <h1 class="title"> Angel Problem Game </h1>
+        <div class="selector">
+            <p> Select # of Tiles: </p>
+            <select id="kSelector">
+                <option value="1"> 1 Tile </option>
+                <option value="2"> 2 Tiles </option>
+                <option value="5"> 5 Tiles </option>
+            </select>         
+        </div>
+        <div class="board" id="board"></div>
+    </body>
+    <script>
+        // Constants
+        const board = document.getElementById("board");
+        const gridSize = 50; // Board size is gridSize x gridSize tiles
+        const center = Math.floor(gridSize/2); // set the center tile of the grid
+        const border = [];
+
+        // Positional Determinants
+        let angelPosition = {x: center, y: center };
+
+        // Variables
+        var k = 1; // Angel Movement Variable 
+        var kSelector = document.getElementById("kSelector"); // Dropdown Box
+
+        // Dropdown Box for Angel Movement
+        kSelector.addEventListener('change', function() {
+            var selectedK = kSelector.value;
+            var k = selectedK
+            console.log('Selected angel movement: ' + selectedK + ' tiles');
+        })
+
+        // Generate Board
+        function createBoard() {
+            var angelPlaced = 0;
+            for (let y = 0; y < gridSize; y++) {
+                for (let x = 0; x < gridSize; x++) {
+                    const tile = document.createElement("div");
+                    tile.classList.add("tile");
+
+                    if (x == center && y == center) {
+                        tile.classList.add("angel");
+                        tile.textContent = "A";
+                    }
+
+                    if (x === 0 || x === gridSize - 1 || y === 0 || y === gridSize - 1) {
+                        tile.classList.add("border");
+                        border.push({ x, y });
+                    }
+
+                    tile.dataset.x = x; // Set data-x attribute
+                    tile.dataset.y = y; // Set data-y attribute
+
+                    tile.addEventListener("click", () => moveAngel(x,y));
+                    board.appendChild(tile);
+                }
+            }
+        }
+
+        // Move Angel
+        function moveAngel(newX, newY) {
+            console.log('Attempting movement.');
+
+            const distX = Math.abs(newX - angelPosition.x);
+            const distY = Math.abs(newY - angelPosition.y);
+            if (distX <= k && distY <= k) {
+                angelPosition.x = newX;
+                angelPosition.y = newY;
+                updateBoard();
+            }
+        } 
+
+
+        // Update Board
+        function updateBoard() {
+            const tiles = document.querySelectorAll(".tile");
+            tiles.forEach((tile) => tile.classList.remove("angel"));
+            const angelTile = document.querySelector(`.tile[data-x="${angelPosition.x}"][data-y="${angelPosition.y}"]`);
+            angelTile.classList.add("angel");
+            angelTile.textContent = "A";
+            devilFloor();
+            borderWin();
+        }
+
+        // The Devil
+        function devilFloor() {
+            const devilX = Math.floor(Math.random() * gridSize);
+            const devilY = Math.floor(Math.random() * gridSize);
+
+            const devilTile = document.querySelector(`.tile[data-x="${devilX}"][data-y="${devilY}"]`);
+            devilTile.classList.add("devil");
+            devilTile.textContent = "D";
+        }
+
+        // The Border (Win Condition)
+        function borderWin() {
+            const angelTile = document.querySelector(`.tile[data-x="${angelPosition.x}"][data-y="${angelPosition.y}"]`);
+
+            if (border.some(tile => tile.x === angelPosition.x && tile.y === angelPosition.y)) {
+                alert("Angel has reached a border tile! You win!");
+            }
+        }
+
+        createBoard();
+
+    </script>
+</html>
