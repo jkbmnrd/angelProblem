@@ -1,58 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title> Angel Problem </title>
-        <style> 
-            html {
-                background-color: gray;
-            }
-            .title {
-                text-align: center;
-            }
-            #dropdown {
-                width: 200px;
-                padding: 5px;
-                font-size: 16px;
-              }
-            .tile {
-                align-items: center;
-                justify-content: center;
-                font-size: 20px;
-                border: 1px solid #000;
-                width: 50px;
-                height: 50px;
-            }           
-            .board {
-                display: grid;
-                grid-template-columns: repeat(50, 50px); 
-                grid-template-rows: repeat(50, 50px);
-            }
-            .angel {
-                background-color: green;
-            }
-            .devil {
-                background-color: red;
-            }
-            .border {
-                background-color: aqua;
-            }
-        </style>
-    </head>
-    <body>
-        <h1 class="title"> Angel Problem Game </h1>
-        <div class="selector">
-            <p> Select # of Tiles: </p>
-            <select id="kSelector">
-                <option value="1"> 1 Tile </option>
-                <option value="2"> 2 Tiles </option>
-                <option value="5"> 5 Tiles </option>
-            </select>         
-        </div>
-        <div class="board" id="board"></div>
-    </body>
-    <script>
         // Constants
         const board = document.getElementById("board");
         const gridSize = 50; // Board size is gridSize x gridSize tiles
@@ -240,6 +185,3 @@
 } 
 
 createBoard();
-
-    </script>
-</html>
