@@ -30,6 +30,9 @@ html {
     grid-template-columns: repeat(50, 50px); 
     grid-template-rows: repeat(50, 50px);
 }
+.moved {
+    background-color: lightgreen;
+}
 .angel {
     background-color: green;
 }
@@ -38,4 +41,7 @@ html {
 }
 .border {
     background-color: aqua;
+}
+.wall {
+    background-color: blueviolet;
 }
