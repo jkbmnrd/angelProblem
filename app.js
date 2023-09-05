@@ -55,14 +55,14 @@
                 const targetTile = document.querySelector(`.tile[data-x="${newX}"][data-y="${newY}"]`);
                 
                 // Check if the target tile is a devil tile
-                if (!targetTile.classList.contains("devil")) {
+                if (!targetTile.classList.contains("devil") && !targetTile.classList.contains("angel")) {
                     const angelTile = document.querySelector(`.tile[data-x="${angelPosition.x}"][data-y="${angelPosition.y}"]`);
                     angelTile.textContent = " ";
                     angelPosition.x = newX;
                     angelPosition.y = newY;
                     updateBoard();
                 } else {
-                    alert('Cannot move to a devil tile.');
+                    console.log('Cannot move to this tile.');
                 }
             }
         }
@@ -112,18 +112,39 @@
         function findClosestBorder() {
             const distances = calculateDistanceToBorder(angelPosition.x, angelPosition.y);
             let closestBorder = 'top';
+            let panicMode = 'false';
             let closestDistance = distances.top;
 
             for (const border of ['bottom', 'left', 'right']) {
                 if (distances[border] < closestDistance) {
                     closestBorder = border;
                     closestDistance = distances[border];
-                } /*else {
-                    closestBorder = 'none';
-                } */
+                }
             }
-
+            if (closestDistance <= 5) {
+                panicMode = 'true';
+                console.log("panic!");
+                }
             return closestBorder;
+        }
+
+        function panic() {
+            const distances = calculateDistanceToBorder(angelPosition.x, angelPosition.y);
+            let closestBorder = 'top';
+            let panicMode = 'false';
+            let closestDistance = distances.top;
+
+            for (const border of ['bottom', 'left', 'right']) {
+                if (distances[border] < closestDistance) {
+                    closestBorder = border;
+                    closestDistance = distances[border];
+                }
+            }
+            if (closestDistance <= 5) {
+                panicMode = 'true';
+                console.log("panic!");
+                }
+            return panicMode;
         }
 
         /* Find closest devil tile to angel
@@ -148,12 +169,38 @@
             return closestDevilTile;
         } */
 
+        // Random Number Generation
+        function rng(max) {
+            return Math.floor(Math.random() * max) + 1;
+        }
+
         // Modify the devilFloor function to place the devil near the closest border
         function devilFloor() {
             const closestBorder = findClosestBorder();
+            const panicMode = findClosestBorder();
             //findClosestDevil();
             let devilX, devilY;
 
+            if (panicMode === 'true') {
+                switch (closestBorder) {
+                    case 'top':
+                        devilX = angelPosition.x;
+                        devilY = angelPosition.y - 5;
+                        break;
+                    case 'bottom':
+                        devilX = angelPosition.x;
+                        devilY = angelPosition.y + 5;
+                        break;
+                    case 'left':
+                        devilX = angelPosition.x - 5;
+                        devilY = angelPosition.y;
+                        break;
+                    case 'right':
+                        devilX = angelPosition.x + 5;
+                        devilY = angelPosition.y;
+                        break;
+            } 
+        } else {
             switch (closestBorder) {
                 case 'top':
                     devilX = angelPosition.x;
@@ -171,15 +218,24 @@
                     devilX = angelPosition.x + 5;
                     devilY = angelPosition.y;
                     break;
-                /*case 'none':
-                    devilX = closestDevilTile.x;
-                    devilY = closestDevilTile.y;
-                    break; */
+                /*case 'tooClose':
+                    devilX = devilX++;
+                    devilY = devilY;
+                    devilX = angelPosition.x + rng(3);
+                    devilY = angelPosition.y + rng(3);
+                    if (devilX === null || devilY === null) {
+                        devilX = Math.floor(Math.random() * gridSize);
+                        devilY = Math.floor(Math.random() * gridSize);
+                    }*/
                 default:
                     break;
             }
+        }
 
             const devilTile = document.querySelector(`.tile[data-x="${devilX}"][data-y="${devilY}"]`);
+            if (devilTile.classList.contains("border") || devilTile.classList.contains("devil")) {
+                devilFloor();
+            }
             devilTile.classList.add("devil");
             devilTile.textContent = "D";
 } 
