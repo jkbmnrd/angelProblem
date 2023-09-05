@@ -69,7 +69,7 @@
         // Dropdown Box for Angel Movement
         kSelector.addEventListener('change', function() {
             var selectedK = kSelector.value;
-            var k = selectedK
+            var k = selectedK;
             console.log('Selected angel movement: ' + selectedK + ' tiles');
         })
 
@@ -107,12 +107,20 @@
             const distX = Math.abs(newX - angelPosition.x);
             const distY = Math.abs(newY - angelPosition.y);
             if (distX <= k && distY <= k) {
-                angelPosition.x = newX;
-                angelPosition.y = newY;
-                updateBoard();
+                const targetTile = document.querySelector(`.tile[data-x="${newX}"][data-y="${newY}"]`);
+                
+                // Check if the target tile is a devil tile
+                if (!targetTile.classList.contains("devil")) {
+                    const angelTile = document.querySelector(`.tile[data-x="${angelPosition.x}"][data-y="${angelPosition.y}"]`);
+                    angelTile.textContent = " ";
+                    angelPosition.x = newX;
+                    angelPosition.y = newY;
+                    updateBoard();
+                } else {
+                    alert('Cannot move to a devil tile.');
+                }
             }
-        } 
-
+        }
 
         // Update Board
         function updateBoard() {
@@ -125,7 +133,7 @@
             borderWin();
         }
 
-        // The Devil
+        /* The Devil // (random movement)
         function devilFloor() {
             const devilX = Math.floor(Math.random() * gridSize);
             const devilY = Math.floor(Math.random() * gridSize);
@@ -133,7 +141,7 @@
             const devilTile = document.querySelector(`.tile[data-x="${devilX}"][data-y="${devilY}"]`);
             devilTile.classList.add("devil");
             devilTile.textContent = "D";
-        }
+        }  */
 
         // The Border (Win Condition)
         function borderWin() {
@@ -144,7 +152,94 @@
             }
         }
 
-        createBoard();
+        // Calculate the distance from the angel to each border
+        function calculateDistanceToBorder(x, y) {
+            const distances = {
+                top: y,
+                bottom: gridSize - y - 1,
+                left: x,
+                right: gridSize - x - 1
+            };
+            return distances;
+        }
+
+        // Find the closest border to the angel
+        function findClosestBorder() {
+            const distances = calculateDistanceToBorder(angelPosition.x, angelPosition.y);
+            let closestBorder = 'top';
+            let closestDistance = distances.top;
+
+            for (const border of ['bottom', 'left', 'right']) {
+                if (distances[border] < closestDistance) {
+                    closestBorder = border;
+                    closestDistance = distances[border];
+                } /*else {
+                    closestBorder = 'none';
+                } */
+            }
+
+            return closestBorder;
+        }
+
+        /* Find closest devil tile to angel
+        function findClosestDevil() {
+            const angelX = angelPosition.x;
+            const angelY = angelPosition.y;
+            let closestDevilTile = null;
+            let closestDistance = Infinity;
+        
+            // Iterate through all devil tiles and calculate their distances from the angel
+            const devilTiles = document.querySelectorAll(".tile.devil");
+            devilTiles.forEach((devilTile) => {
+                const devilX = parseInt(devilTile.dataset.x);
+                const devilY = parseInt(devilTile.dataset.y);
+                const distance = Math.sqrt(Math.pow(angelX - devilX, 2) + Math.pow(angelY - devilY, 2));
+        
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestDevilTile = devilTile;
+                }
+            });
+            return closestDevilTile;
+        } */
+
+        // Modify the devilFloor function to place the devil near the closest border
+        function devilFloor() {
+            const closestBorder = findClosestBorder();
+            //findClosestDevil();
+            let devilX, devilY;
+
+            switch (closestBorder) {
+                case 'top':
+                    devilX = angelPosition.x;
+                    devilY = angelPosition.y - 5;
+                    break;
+                case 'bottom':
+                    devilX = angelPosition.x;
+                    devilY = angelPosition.y + 5;
+                    break;
+                case 'left':
+                    devilX = angelPosition.x - 5;
+                    devilY = angelPosition.y;
+                    break;
+                case 'right':
+                    devilX = angelPosition.x + 5;
+                    devilY = angelPosition.y;
+                    break;
+                /*case 'none':
+                    devilX = closestDevilTile.x;
+                    devilY = closestDevilTile.y;
+                    break; */
+                default:
+                    break;
+            }
+
+            const devilTile = document.querySelector(`.tile[data-x="${devilX}"][data-y="${devilY}"]`);
+            devilTile.classList.add("devil");
+            devilTile.textContent = "D";
+} 
+
+createBoard();
 
     </script>
 </html>
